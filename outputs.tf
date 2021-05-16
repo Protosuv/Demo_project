@@ -21,6 +21,14 @@ output "client_public_ip" {
   description = "Client public ip for ssh access"
   value       = aws_instance.client[0].public_ip
 }
+output "server_public_dns" {
+  description = "Server public DNS"
+  value       = aws_instance.server[0].public_dns
+}
+output "client_public_dns" {
+  description = "Client public DNS"
+  value       = aws_instance.client[0].public_dns
+}
 output "region" {
   value = "us-east-1"
 }
