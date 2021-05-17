@@ -29,9 +29,36 @@ provider "aws" {
     values = ["CentOS Linux 7*"]
   }
 }
+resource "aws_ebs_volume" "server-vol" {
+  availability_zone = var.aws-av-zone
+  size = 8
+  type = "gp2"
 
+  tags = {
+    Name = "server-vol"
+  }
+}
+resource "aws_ebs_volume" "client-vol" {
+  availability_zone = var.aws-av-zone
+  size = 8
+  type = "gp2"
+
+  tags = {
+    Name = "client-vol"
+  }
+}
+resource "aws_volume_attachment" "server_att" {
+  device_name = "/dev/sdb"
+  volume_id   = aws_ebs_volume.server-vol.id
+  instance_id = aws_instance.server[0].id
+}
+resource "aws_volume_attachment" "client_att" {
+  device_name = "/dev/sdb"
+  volume_id   = aws_ebs_volume.client-vol.id
+  instance_id = aws_instance.client[0].id
+}
 data "aws_caller_identity" "current" {}
-# I use module for instance
+# I use module for instance (1st variant)
 # module "ec2-instance" {
 #   source                 = "terraform-aws-modules/ec2-instance/aws"
 #   version                = "~> 2.0"
@@ -58,10 +85,12 @@ resource "aws_key_pair" "alex" {
 resource "aws_instance" "server" {
   ami           = data.aws_ami.centos.id
   instance_type = local.web_instance_type_map[terraform.workspace]
+  availability_zone = var.aws-av-zone
   count = local.web_instance_count_map[terraform.workspace]
   key_name = "alex-key"
   security_groups = [aws_security_group.ingress-all-test.id]
   subnet_id = aws_subnet.demo-subnet.id
+  private_ip = "172.16.1.5"
 
   tags = {
     Name = "Server"
@@ -72,21 +101,27 @@ resource "aws_instance" "server" {
   # }
   instance_initiated_shutdown_behavior = "stop"
   associate_public_ip_address = "true"
+    
   ebs_block_device {
     device_name = "/dev/sda1"
     volume_type = "gp2"
     delete_on_termination = "false"
-    volume_size = 8
+    volume_size = 10
+    tags = {
+      "Name" = "Server"
+    }
   }
 }
 
 resource "aws_instance" "client" {
   ami           = data.aws_ami.centos.id
   instance_type = local.web_instance_type_map[terraform.workspace]
+  availability_zone = var.aws-av-zone
   count = local.web_instance_count_map[terraform.workspace]
   key_name = "alex-key"
   security_groups = [aws_security_group.ingress-all-test.id]
   subnet_id = aws_subnet.demo-subnet.id
+  private_ip = "172.16.1.100"
 
   tags = {
     Name = "Client"
@@ -101,7 +136,10 @@ resource "aws_instance" "client" {
     device_name = "/dev/sda1"
     volume_type = "gp2"
     delete_on_termination = "false"
-    volume_size = 8
+    volume_size = 10
+    tags = {
+      "Name" = "Client"
+    }
   }
 }
 //
