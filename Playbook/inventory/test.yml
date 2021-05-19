@@ -1,0 +1,8 @@
+---
+  test:
+    hosts:
+      localhost:
+        ansible_connection: local
+      centos7:
+        ansible_connection: docker
+      

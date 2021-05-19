@@ -1,0 +1,11 @@
+---
+app_user: "apache"
+http_host: "client"
+http_conf: "client.conf"
+http_port: "80"
+disable_default: true
+
+ansible_port: 22
+ansible_connection: ssh
+ansible_user: root
+ansible_python_interpreter: auto_legacy_silent

@@ -1,0 +1,123 @@
+
+
+---
+- hosts: all
+  become: true
+  
+  tasks:
+    
+    - name: Install the latest version of Apache and MC
+      ansible.builtin.yum: 
+        state: latest
+        name:
+          - httpd
+          - mc
+        # name: httpd
+        update_cache: yes
+
+    - name: Create document root
+      ansible.builtin.file:
+        path: "{{ http_dir }}/{{ http_host }}"
+        state: directory
+        owner: "{{ app_user }}"
+        mode: '0755'
+
+    - name: Create directories for virtual hosts
+      ansible.builtin.file:
+        path: "/etc/httpd/sites-available"
+        state: directory
+        owner: "{{ app_user }}"
+        mode: '0755'
+
+    - name: Create directories for enabled virtual hosts
+      ansible.builtin.file:
+        path: "/etc/httpd/sites-enabled"
+        state: directory
+        owner: "{{ app_user }}"
+        mode: '0755'
+
+    - name: Add dir in configuration file
+      ansible.builtin.lineinfile:
+        dest: "/etc/httpd/conf/httpd.conf"
+        line: "IncludeOptional sites-enabled/*.conf"
+        insertafter:
+        state: present
+
+    - name: Copy index test page
+      ansible.builtin.template:
+        src: "files/index.html.j2"
+        dest: "{{ http_dir }}/{{ http_host }}/index.html"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: 0644
+
+    - name: Set up Apache virtualhost
+      ansible.builtin.template:
+        src: "files/apache.conf.j2"
+        dest: "/etc/httpd/sites-available/{{ http_conf }}"
+    
+    - name: Create a symbolic link
+      ansible.builtin.file:
+        src: "/etc/httpd/sites-available/{{ http_conf }}"
+        dest: "/etc/httpd/sites-enabled/{{ http_conf }}"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        state: link
+
+    # - name: Enable new site
+    #   shell: /usr/sbin/a2ensite {{ http_conf }}
+    #   notify: Reload Apache
+
+    # - name: Disable default Apache site
+    #   shell: /usr/sbin/a2dissite 000-default.conf
+    #   when: disable_default
+    #   notify: Reload Apache
+
+    - name: Enable Apache on System Boot
+      service: 
+        name: httpd
+        enabled: yes
+      notify:
+        - start apache
+    # - setup firewalld
+    # - reload firewalld
+
+    - name: Ensure httpd is running
+      service:
+        name: httpd 
+        state: started
+    
+    
+  handlers:
+    - name: start apache
+      service: 
+        name: httpd
+        state: started
+
+  #   - name: setup firewalld
+  #     firewalld:
+  #       service: http
+  #       permanent: true
+  #       state: enabled
+  #   - name: reload firewalld
+  #     service: name=firewalld state=restarted
+
+    # - name: "UFW - Allow HTTP on port {{ http_port }}"
+    #   ufw:
+    #     rule: allow
+    #     port: "{{ http_port }}"
+        # proto: tcp 
+
+  # handlers:
+  #   - name: Reload Apache
+  #     service:
+  #       name: apache2
+  #       state: reloaded
+
+  #   - name: Restart Apache
+  #     service:
+  #       name: apache2
+  #       state: restarted
+
+    
+

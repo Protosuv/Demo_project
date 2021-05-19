@@ -1,0 +1,7 @@
+---
+app_user: "apache"
+http_host: "client"
+http_conf: "client.conf"
+http_port: "80"
+disable_default: true
+http_dir: /var/www/html
