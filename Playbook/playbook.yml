@@ -35,6 +35,13 @@
         state: directory
         owner: "{{ app_user }}"
         mode: '0755'
+    
+    - name: Create directory for logs
+      ansible.builtin.file:
+        path: "{{log_dir}}/{{ http_host }}"
+        state: directory
+        owner: "{{ app_user }}"
+        mode: '0755'
 
     - name: Add dir in configuration file
       ansible.builtin.lineinfile:
@@ -86,11 +93,11 @@
       service:
         name: httpd 
         state: started
-    
+   
     
   handlers:
     - name: start apache
-      service: 
+      service:
         name: httpd
         state: started
 

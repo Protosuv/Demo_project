@@ -4,8 +4,9 @@ http_host: "client"
 http_conf: "client.conf"
 http_port: "80"
 disable_default: true
+log_dir: /var/log
 
 ansible_port: 22
 ansible_connection: ssh
-ansible_user: root
+ansible_user: Accenture
 ansible_python_interpreter: auto_legacy_silent
