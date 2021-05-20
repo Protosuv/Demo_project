@@ -52,7 +52,7 @@
 
     - name: Copy index test page
       ansible.builtin.template:
-        src: "files/index.html.j2"
+        src: "templates/index.html.j2"
         dest: "{{ http_dir }}/{{ http_host }}/index.html"
         owner: "{{ app_user }}"
         group: "{{ app_user }}"
@@ -60,7 +60,7 @@
 
     - name: Set up Apache virtualhost
       ansible.builtin.template:
-        src: "files/apache.conf.j2"
+        src: "templates/apache.conf.j2"
         dest: "/etc/httpd/sites-available/{{ http_conf }}"
     
     - name: Create a symbolic link
