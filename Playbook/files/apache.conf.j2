@@ -2,7 +2,7 @@
     ServerAdmin webmaster@localhost
     ServerName {{ http_host }}
     ServerAlias www.{{ http_host }}
-    DocumentRoot /var/www/{{ http_host }}
+    DocumentRoot /var/www/html/{{ http_host }}
     ErrorLog {{log_dir}}/{{ http_host }}/error.log
     CustomLog {{log_dir}}/{{ http_host }}/access.log combined
 </VirtualHost>

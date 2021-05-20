@@ -84,22 +84,27 @@
       service: 
         name: httpd
         enabled: yes
-      notify:
-        - start apache
+      # notify:
+      #   - start apache
     # - setup firewalld
     # - reload firewalld
 
-    - name: Ensure httpd is running
-      service:
-        name: httpd 
+    # - name: Ensure httpd is running
+    #   service:
+    #     name: httpd 
+    #     state: started
+    
+    - name: Make sure a service unit is running
+      ansible.builtin.systemd:
         state: started
+        name: httpd
    
     
-  handlers:
-    - name: start apache
-      service:
-        name: httpd
-        state: started
+  # handlers:
+  #   - name: start apache
+  #     service:
+  #       name: httpd
+  #       state: started
 
   #   - name: setup firewalld
   #     firewalld:

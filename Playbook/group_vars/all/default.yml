@@ -5,3 +5,4 @@ http_conf: "client.conf"
 http_port: "80"
 disable_default: true
 http_dir: /var/www/html
+log_dir: /var/log
