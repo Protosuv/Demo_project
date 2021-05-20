@@ -57,6 +57,7 @@
         owner: "{{ app_user }}"
         group: "{{ app_user }}"
         mode: 0644
+        when: TEST_TEXT is defined
 
     - name: Set up Apache virtualhost
       ansible.builtin.template:
