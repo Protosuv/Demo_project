@@ -1,5 +1,4 @@
 
-
 ---
 - hosts: all
   become: true
@@ -47,7 +46,7 @@
       ansible.builtin.lineinfile:
         dest: "/etc/httpd/conf/httpd.conf"
         line: "IncludeOptional sites-enabled/*.conf"
-        insertafter:
+        insertafter: "IncludeOptional conf.d/*.conf"
         state: present
 
     - name: Copy index test page
@@ -57,7 +56,7 @@
         owner: "{{ app_user }}"
         group: "{{ app_user }}"
         mode: 0644
-        when: TEST_TEXT is defined
+      when: TEST_TEXT is defined
 
     - name: Set up Apache virtualhost
       ansible.builtin.template:
@@ -72,65 +71,12 @@
         group: "{{ app_user }}"
         state: link
 
-    # - name: Enable new site
-    #   shell: /usr/sbin/a2ensite {{ http_conf }}
-    #   notify: Reload Apache
-
-    # - name: Disable default Apache site
-    #   shell: /usr/sbin/a2dissite 000-default.conf
-    #   when: disable_default
-    #   notify: Reload Apache
-
     - name: Enable Apache on System Boot
       service: 
         name: httpd
         enabled: yes
-      # notify:
-      #   - start apache
-    # - setup firewalld
-    # - reload firewalld
 
-    # - name: Ensure httpd is running
-    #   service:
-    #     name: httpd 
-    #     state: started
-    
-    - name: Make sure a service unit is running
+    - name: Ensure httpd is running
       ansible.builtin.systemd:
         state: started
         name: httpd
-   
-    
-  # handlers:
-  #   - name: start apache
-  #     service:
-  #       name: httpd
-  #       state: started
-
-  #   - name: setup firewalld
-  #     firewalld:
-  #       service: http
-  #       permanent: true
-  #       state: enabled
-  #   - name: reload firewalld
-  #     service: name=firewalld state=restarted
-
-    # - name: "UFW - Allow HTTP on port {{ http_port }}"
-    #   ufw:
-    #     rule: allow
-    #     port: "{{ http_port }}"
-        # proto: tcp 
-
-  # handlers:
-  #   - name: Reload Apache
-  #     service:
-  #       name: apache2
-  #       state: reloaded
-
-  #   - name: Restart Apache
-  #     service:
-  #       name: apache2
-  #       state: restarted
-
-    
-

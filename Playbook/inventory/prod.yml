@@ -3,3 +3,5 @@
     hosts:
       client:
         ansible_host: 172.16.1.100
+        ansible_connection: ssh
+        ansible_user: adminuser
